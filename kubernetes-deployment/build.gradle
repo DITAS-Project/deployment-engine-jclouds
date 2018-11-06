@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+}
+
+
+sourceCompatibility = 1.8
+
+dependencies {
+    compile project(':infrastructure-deployment')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
