@@ -9,7 +9,9 @@
 
 rootProject.name = 'deployment_engine_java'
 
-include 'frontend_rest_service'
 include 'infrastructure-deployment'
 include 'kubernetes-deployment'
+include 'frontend-rest-spark'
+include 'deployment-common'
+include 'deployment-mongo-repository'
 

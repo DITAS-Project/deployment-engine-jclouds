@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: deployment.engine2
----
-testFramework: junit
-sourceLanguage: java

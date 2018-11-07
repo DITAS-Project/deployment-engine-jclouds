@@ -8,7 +8,7 @@ dependencies {
     compile "org.apache.jclouds:jclouds-all:2.1.1"
     compile 'org.apache.jclouds.labs:cloudsigma2:2.1.1'
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
+    compile project(':deployment-common')
 
     compile group: 'org.apache.commons', name: 'commons-configuration2', version: '2.4'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'

@@ -1,10 +1,9 @@
 package com.atos.deployment.kubernetes;
 
-import com.atos.deployment.infrastructure.beans.Deployment;
-import com.atos.deployment.infrastructure.beans.DeploymentInfo;
+import com.atos.deployment.beans.InfrastructureDeploymentInfo;
 
 public interface KubernetesDeployer {
 
-    boolean deployKubernetes(DeploymentInfo deployment);
+    boolean deployKubernetesCluster(InfrastructureDeploymentInfo deployment);
 
 }

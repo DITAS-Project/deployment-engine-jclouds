@@ -5,17 +5,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
 
-import com.atos.deployment.infrastructure.beans.Drive;
-import com.atos.deployment.infrastructure.beans.Infrastructure;
-import com.atos.deployment.infrastructure.beans.InfrastructureDeploymentInfo;
-import com.atos.deployment.infrastructure.beans.NodeInfo;
-import com.atos.deployment.infrastructure.beans.Resource;
-import com.atos.deployment.infrastructure.beans.RoleType;
-import com.atos.deployment.infrastructure.beans.ServerStatusType;
-import com.atos.deployment.infrastructure.utils.TimeoutException;
-import com.atos.deployment.infrastructure.utils.Utils;
-import com.sun.jna.platform.FileUtils;
-import org.apache.commons.configuration2.ConfigurationUtils;
+import com.atos.deployment.beans.Infrastructure;
+import com.atos.deployment.beans.InfrastructureDeploymentInfo;
+import com.atos.deployment.beans.NodeInfo;
+import com.atos.deployment.beans.Resource;
+import com.atos.deployment.beans.RoleType;
+import com.atos.deployment.beans.ServerStatusType;
+import com.atos.deployment.utils.Utils;
+import com.sun.jna.platform.win32.OaIdl;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -43,12 +40,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-
-import static org.jclouds.cloudsigma2.domain.DriveStatus.UNMOUNTED;
 
 public class CloudSigmaDeployer implements Deployer {
 
@@ -65,7 +59,8 @@ public class CloudSigmaDeployer implements Deployer {
     public CloudSigmaDeployer() throws ConfigurationException {
         Configurations configs = new Configurations();
 
-        PropertiesConfiguration cloudsigmaConfig = configs.properties(new File("/home/jose/.cloudsigma.conf"));
+        String configFile = System.getProperty("user.home") + File.pathSeparator + ".cloudsigma.conf";
+        PropertiesConfiguration cloudsigmaConfig = configs.properties(new File(configFile));
 
         context = ContextBuilder.newBuilder("cloudsigma2")
                 .endpoint(cloudsigmaConfig.getString(ENDPOINT))
@@ -182,5 +177,32 @@ public class CloudSigmaDeployer implements Deployer {
                 timeout,
                 10000,
                 () -> cloudSigmaApi.getDriveInfo(uuid));
+    }
+
+    @Override
+    public InfrastructureDeploymentInfo delete(InfrastructureDeploymentInfo infrastructure) {
+        List<NodeInfo> toDelete = new ArrayList<>();
+        for (NodeInfo node : infrastructure.getSlaves()) {
+            try {
+                deleteNode(node);
+                toDelete.add(node);
+            } catch (Exception e) {
+                logger.info("Error deleting slave node " + node.getName() + " from infrastructure " + infrastructure.getInfraId());
+            }
+        }
+        infrastructure.getSlaves().removeAll(toDelete);
+        try {
+            deleteNode(infrastructure.getMaster());
+            infrastructure.setMaster(null);
+        } catch (Exception e) {
+            logger.info("Error deleting master node from infrastructure " + infrastructure.getInfraId());
+        }
+        return infrastructure;
+    }
+
+    private void deleteNode(NodeInfo node) throws TimeoutException, InterruptedException {
+        cloudSigmaApi.stopServer(node.getUuid());
+        Utils.retry(status -> !ServerStatus.STOPPING.equals(status), 60000, 10000, () -> cloudSigmaApi.getServerInfo(node.getUuid()).getStatus());
+        cloudSigmaApi.deleteServer(node.getUuid());
     }
 }
