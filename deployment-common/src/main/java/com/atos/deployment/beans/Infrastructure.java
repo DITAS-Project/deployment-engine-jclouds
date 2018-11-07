@@ -13,14 +13,7 @@ public class Infrastructure {
     @JsonProperty("on-line")
     private Boolean online;
 
-    @JsonProperty("api_endpoint")
-    private String apiEndpoint;
-
-    @JsonProperty("api_type")
-    private ApiType apiType;
-
-    @JsonProperty("keypair_id")
-    private String keyparId;
+    private CloudProviderInfo provider;
 
     private List<Resource> resources;
 
@@ -56,35 +49,19 @@ public class Infrastructure {
         this.online = online;
     }
 
-    public String getApiEndpoint() {
-        return apiEndpoint;
-    }
-
-    public void setApiEndpoint(String apiEndpoint) {
-        this.apiEndpoint = apiEndpoint;
-    }
-
-    public ApiType getApiType() {
-        return apiType;
-    }
-
-    public void setApiType(ApiType apiType) {
-        this.apiType = apiType;
-    }
-
-    public String getKeyparId() {
-        return keyparId;
-    }
-
-    public void setKeyparId(String keyparId) {
-        this.keyparId = keyparId;
-    }
-
     public List<Resource> getResources() {
         return resources;
     }
 
     public void setResources(List<Resource> resources) {
         this.resources = resources;
+    }
+
+    public CloudProviderInfo getProvider() {
+        return provider;
+    }
+
+    public void setProvider(CloudProviderInfo provider) {
+        this.provider = provider;
     }
 }

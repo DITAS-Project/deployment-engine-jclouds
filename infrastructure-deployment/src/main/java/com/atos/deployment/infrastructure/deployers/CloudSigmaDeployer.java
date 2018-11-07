@@ -59,7 +59,7 @@ public class CloudSigmaDeployer implements Deployer {
     public CloudSigmaDeployer() throws ConfigurationException {
         Configurations configs = new Configurations();
 
-        String configFile = System.getProperty("user.home") + File.pathSeparator + ".cloudsigma.conf";
+        String configFile = System.getProperty("user.home") + File.separator + ".cloudsigma.conf";
         PropertiesConfiguration cloudsigmaConfig = configs.properties(new File(configFile));
 
         context = ContextBuilder.newBuilder("cloudsigma2")
@@ -204,5 +204,6 @@ public class CloudSigmaDeployer implements Deployer {
         cloudSigmaApi.stopServer(node.getUuid());
         Utils.retry(status -> !ServerStatus.STOPPING.equals(status), 60000, 10000, () -> cloudSigmaApi.getServerInfo(node.getUuid()).getStatus());
         cloudSigmaApi.deleteServer(node.getUuid());
+        cloudSigmaApi.deleteDrives(node.getDriveUuids());
     }
 }

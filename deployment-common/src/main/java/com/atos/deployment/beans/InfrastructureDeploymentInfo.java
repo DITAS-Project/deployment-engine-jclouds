@@ -5,6 +5,7 @@ import java.util.List;
 public class InfrastructureDeploymentInfo {
     private String infraId;
     private String type;
+    private CloudProviderInfo provider;
     private NodeInfo master;
     private List<NodeInfo> slaves;
     private boolean kubernetesDeployed;
@@ -39,6 +40,14 @@ public class InfrastructureDeploymentInfo {
 
     public void setSlaves(List<NodeInfo> slaves) {
         this.slaves = slaves;
+    }
+
+    public CloudProviderInfo getProvider() {
+        return provider;
+    }
+
+    public void setProvider(CloudProviderInfo provider) {
+        this.provider = provider;
     }
 
     public boolean isKubernetesDeployed() {

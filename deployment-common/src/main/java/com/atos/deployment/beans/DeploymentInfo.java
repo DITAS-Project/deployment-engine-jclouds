@@ -21,4 +21,13 @@ public class DeploymentInfo {
     public void setInfrastructures(List<InfrastructureDeploymentInfo> infrastructures) {
         this.infrastructures = infrastructures;
     }
+
+    public InfrastructureDeploymentInfo getInfrastructure(String infraId) {
+        return this
+                .getInfrastructures()
+                .stream()
+                .filter(infra -> infra.getInfraId().equals(infraId))
+                .findFirst()
+                .get();
+    }
 }
